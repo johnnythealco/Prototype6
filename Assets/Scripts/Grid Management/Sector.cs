@@ -151,6 +151,62 @@ public class Sector : GLMonoBehaviour
 	}
 
 
+	public static void CreateUnit(UnitState unitState, FlatHexPoint point)
+	{
+		var template = Game.Manager.UnitRegister.Lookup (unitState.Designation);
+		Unit unit = Instantiate (template, Sector.Map [point], Quaternion.identity) as Unit;
+
+
+		unit.state = unitState;
+		unit.gameObject.name = unit.state.DisplayName;
+		Sector.Grid [point].unit = unit;
+
+		Sector.Grid [point].contents = SectorCell.Contents.unit; 	
+		Sector.Grid [point].isAccessible = false;
+
+		unit.state.coordinates = Sector.Grid [point].name;
+	}
+
+
+	public void registerAtPoint (Vector3 point, Unit unit)
+	{
+		var _cell = Sector.Grid [Sector.Map [point]];
+		_cell.contents = SectorCell.Contents.unit;
+		_cell.unit = unit;
+		_cell.isAccessible = false;
+
+//		Battle.Manager.state.occupiedCells.Add (_cell);
+			
+	}
+
+	public void unRegisterAtPoint (Vector3 point, Unit unit)
+	{
+		var _cell = Sector.Grid [Sector.Map [point]];
+		_cell.contents = SectorCell.Contents.empty; 
+		_cell.unit = null;
+		_cell.isAccessible = true;
+
+//		Battle.Manager.state.occupiedCells.Remove (_cell);
+
+	}
+
+	public static List<Vector3> getDeploymentArea (FlatHexPoint point, int radius)
+	{
+		List<Vector3> result = new List<Vector3> ();
+		var area = Algorithms.GetPointsInRange<SectorCell, FlatHexPoint>
+			(Sector.Grid, point,
+			           JKCell => JKCell.isAccessible,
+			           (p, q) => 1,
+			           radius
+		           );
+	
+	
+		foreach (var _point in area)
+		{
+			result.Add (Sector.Map [_point]);
+		}
+		return result;
+	}
 
 
 

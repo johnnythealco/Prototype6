@@ -6,6 +6,7 @@ public class Unit : MonoBehaviour
 {
 	public String	displayName;
 	public UnitClass shipClass;
+	public string Designation; 
 	[SerializeField]
 	public UnitState state; 
 
@@ -22,7 +23,17 @@ public class Unit : MonoBehaviour
 
 	void Start()
 	{
+		
+	}
+
+	public void initalize()
+	{
 		state = new UnitState (this);
+	}
+
+	public void addUnitToRegister()
+	{
+//		Game.UnitRegister.Add (this.Designation, this);
 	}
 
 }

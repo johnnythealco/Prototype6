@@ -9,6 +9,9 @@ public class UnitState : System.Object
 	#region Variables
 	private String displayName;
 	private UnitClass shipClass;
+	public string Designation; 
+
+	public string coordinates; 
 
 	public int actionPoints;
 	private float initiative;
@@ -53,7 +56,7 @@ public class UnitState : System.Object
 
 	public UnitState (Unit _template)
 	{
-
+		this.Designation = _template.Designation;
 		this.shipClass = _template.shipClass;
 		this.displayName = _template.displayName;
 		this.actionPoints = _template.baseActionPoints;
@@ -63,6 +66,10 @@ public class UnitState : System.Object
 		this.enginesHealth = _template.baseMovementRange;
 		this.weaponsHealth = _template.baseEnginesHealth;
 		this.movementRange = _template.baseWeaponsHealth; 
+	}
+
+	public UnitState ()
+	{
 	}
 
 
@@ -76,6 +83,16 @@ public class UnitState : System.Object
 			return true;
 		else
 			return false;
+
+
+	}
+
+
+	public void deployUnit(Vector3 point)
+	{
+
+		Sector.CreateUnit (this, Sector.Map [point]);
+
 
 
 	}
