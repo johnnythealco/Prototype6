@@ -6,24 +6,24 @@ using Gamelogic.Grids;
 [RequireComponent(typeof(BoxCollider))]
 public class Sector : GLMonoBehaviour
 {
-//	public SectorCell sectorCellPrefab;
+
 	public int size = 12;
 	public Vector2 padding;
 	public SectorCell battleCellPrefab;
 
 
 	public static FlatHexGrid<SectorCell> Grid{ get; set; }
-
 	public static IMap3D<FlatHexPoint> Map{ get; set; }
 
 	#region Spawnpoints
-	public static FlatHexPoint centerSpawn;
-	public static FlatHexPoint northSpawn;
-	public static FlatHexPoint southSpawn;
-	public static FlatHexPoint northEastSpwan;
-	public static FlatHexPoint northWestSpawn;
-	public static FlatHexPoint southEastSpwan;
-	public static FlatHexPoint southWestSpawn;
+	public List<FlatHexPoint> spawnpoints;
+	public  FlatHexPoint centerSpawn;
+	public  FlatHexPoint northSpawn;
+	public  FlatHexPoint southSpawn;
+	public  FlatHexPoint northEastSpwan;
+	public  FlatHexPoint northWestSpawn;
+	public  FlatHexPoint southEastSpwan;
+	public  FlatHexPoint southWestSpawn;
 	#endregion 
 
 
@@ -38,7 +38,7 @@ public class Sector : GLMonoBehaviour
 	}
 
 
-
+	#region Grid Building
 	public void BuildGrid ()
 	{
 
@@ -87,12 +87,19 @@ public class Sector : GLMonoBehaviour
 		int _point = size - _spawnpointBuffer;
 
 		centerSpawn = new FlatHexPoint (0, 0); 
+		spawnpoints.Add (centerSpawn);
 		northSpawn = new FlatHexPoint (0, _point);
+		spawnpoints.Add (northSpawn);
 		southSpawn = new FlatHexPoint (0, -_point);
+		spawnpoints.Add (southSpawn);
 		northEastSpwan = new FlatHexPoint (_point, 0);
+		spawnpoints.Add (northEastSpwan);
 		southEastSpwan = new FlatHexPoint (_point, -_point);
+		spawnpoints.Add (southEastSpwan);
 		northWestSpawn = new FlatHexPoint (-_point, _point); 
+		spawnpoints.Add (northWestSpawn);
 		southWestSpawn = new FlatHexPoint (-_point, 0);
+		spawnpoints.Add (southWestSpawn);
 
 		Grid [northSpawn].Color = Color.red;
 		Grid [southSpawn].Color = Color.red;
@@ -101,9 +108,9 @@ public class Sector : GLMonoBehaviour
 		Grid [northWestSpawn].Color = Color.red;
 		Grid [southWestSpawn].Color = Color.red;
 	}
+	#endregion
 
-
-
+	#region Pathfinding
 	/**
 	 * Returns a list of Flat Hex Points including the start and end points
 	 * accounting for isAccesible and cost for each cell along the path 
@@ -149,26 +156,11 @@ public class Sector : GLMonoBehaviour
 
 		return path;
 	}
+	#endregion
 
 
-	public static void CreateUnit(UnitState unitState, FlatHexPoint point)
-	{
-		var template = Game.Manager.UnitRegister.Lookup (unitState.Designation);
-		Unit unit = Instantiate (template, Sector.Map [point], Quaternion.identity) as Unit;
-
-
-		unit.state = unitState;
-		unit.gameObject.name = unit.state.DisplayName;
-		Sector.Grid [point].unit = unit;
-
-		Sector.Grid [point].contents = SectorCell.Contents.unit; 	
-		Sector.Grid [point].isAccessible = false;
-
-		unit.state.coordinates = Sector.Grid [point].name;
-	}
-
-
-	public void registerAtPoint (Vector3 point, Unit unit)
+	#region Utility Methods	
+	public static void registerAtPoint (Vector3 point, UnitController unit)
 	{
 		var _cell = Sector.Grid [Sector.Map [point]];
 		_cell.contents = SectorCell.Contents.unit;
@@ -179,7 +171,7 @@ public class Sector : GLMonoBehaviour
 			
 	}
 
-	public void unRegisterAtPoint (Vector3 point, Unit unit)
+	public static void unRegisterAtPoint (Vector3 point, UnitController unit)
 	{
 		var _cell = Sector.Grid [Sector.Map [point]];
 		_cell.contents = SectorCell.Contents.empty; 
@@ -188,6 +180,26 @@ public class Sector : GLMonoBehaviour
 
 //		Battle.Manager.state.occupiedCells.Remove (_cell);
 
+	}
+
+	public static void CreateUnit(Unit _unit, FlatHexPoint _point)
+	{
+		var template = Game.Manager.UnitRegister.Lookup (_unit.Designation);
+		UnitController clone = Instantiate (template, Sector.Map [_point], Quaternion.identity) as UnitController;
+
+
+		clone.unit = _unit;
+
+		Sector.Grid [_point].unit = clone;
+
+		Sector.Grid [_point].contents = SectorCell.Contents.unit; 	
+		Sector.Grid [_point].isAccessible = false;
+
+		clone.unit.coordinates.x = _point.X;
+		clone.unit.coordinates.y = _point.Y;
+
+
+		Debug.Log ("Creating Unit at point: " + Sector.Grid [_point].name);
 	}
 
 	public static List<Vector3> getDeploymentArea (FlatHexPoint point, int radius)
@@ -208,6 +220,29 @@ public class Sector : GLMonoBehaviour
 		return result;
 	}
 
+	public static FlatHexPoint getPoint(GridPos _position)
+	{
+		return new FlatHexPoint (_position.x, _position.y);
+	}
+
+	public void DeployFeet( List<Unit> fleet,  List<Vector3> spwanPoints)
+	{
+		for(int i = 0; i < fleet.Count; i++)
+		{
+			CreateUnit (fleet [i], Map [spwanPoints [i]]);
+		}
+	}
+
+	public void LoadNewBattle()
+	{
+		for(int i = 0; i < Game.Manager.Players.Count; i++)
+		{
+			var fleet = Game.Manager.Players [i].fleet;  
+			var deploymentArea = getDeploymentArea (spawnpoints [i], fleet.Count);
+			DeployFeet (fleet, deploymentArea);	
+		}
+	}
+	#endregion
 
 
 

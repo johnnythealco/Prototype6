@@ -5,32 +5,44 @@ using System.Collections.Generic;
 
 public class JKTesting : MonoBehaviour {
 
-	public List<Unit> testUnits;
+	public List<UnitController> testUnits;
 
-	public List<UnitState> testUnitStates;
+	public List<Unit> testUnitStates;
 
 	void Awake ()
 	{
-		testUnitStates = new List<UnitState> ();
+		testUnitStates = new List<Unit> ();
 		foreach(var unit in testUnits)
 		{
-			testUnitStates.Add (unit.state);
+			var newunitState = new Unit (unit);
+			testUnitStates.Add (newunitState);
 		}
-
 		testUnits.Clear ();
-
-
-
 	}
 
 	public void DeployFromUnitStateList()
 	{
-		var points = Sector.getDeploymentArea (Sector.centerSpawn, testUnitStates.Count);
+//		var points = Sector.getDeploymentArea (Sector.centerSpawn, testUnitStates.Count);
+//
+//		for( int i = 0; i < testUnitStates.Count; i++)
+//		{
+//			testUnitStates [i].deployUnit (points [i]);
+//		}
 
-		for( int i = 0; i < testUnitStates.Count; i++)
-		{
-			testUnitStates [i].deployUnit (points [i]);
-		}
+				for( int i = 0; i < testUnitStates.Count; i++)
+				{
+					testUnitStates [i].deployUnit ();
+				}
+	}
+
+	public void SaveUnitState()
+	{
+		Game.SaveUnitState (testUnitStates);
+	}
+
+	public void LoadUnitState()
+	{
+		testUnitStates = Game.LoadUnitState ();
 	}
 
 

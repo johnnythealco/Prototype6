@@ -2,8 +2,9 @@
 using System.Collections;
 using System;
 
+
 [System.Serializable]
-public class UnitState : System.Object
+public class Unit : System.Object
 {
 	
 	#region Variables
@@ -11,8 +12,9 @@ public class UnitState : System.Object
 	private UnitClass shipClass;
 	public string Designation; 
 
-	public string coordinates; 
+	public GridPos coordinates; 
 
+	private string faction;
 	public int actionPoints;
 	private float initiative;
 	private float health;
@@ -32,6 +34,8 @@ public class UnitState : System.Object
 	public String	DisplayName{ get { return displayName; } }
 
 	public UnitClass ShipClass{ get{ return shipClass;}}
+
+	public Faction Faction{get{return Game.Manager.FactionRegister.findFactionByName(faction);}}
 
 	public int 		ActionPoints{ get { return actionPoints; } }
 
@@ -54,11 +58,12 @@ public class UnitState : System.Object
 
 
 
-	public UnitState (Unit _template)
+	public Unit (UnitController _template)
 	{
 		this.Designation = _template.Designation;
 		this.shipClass = _template.shipClass;
 		this.displayName = _template.displayName;
+		this.faction = _template.faction.FactionName;
 		this.actionPoints = _template.baseActionPoints;
 		this.initiative = _template.baseInitiative;
 		this.health = _template.baseHealth;
@@ -68,7 +73,7 @@ public class UnitState : System.Object
 		this.movementRange = _template.baseWeaponsHealth; 
 	}
 
-	public UnitState ()
+	public Unit ()
 	{
 	}
 
@@ -97,5 +102,16 @@ public class UnitState : System.Object
 
 	}
 
+	public void deployUnit()
+	{
+		Sector.CreateUnit (this, Sector.getPoint(coordinates));
+	}
 
+
+}
+
+[System.Serializable]
+public class GridPos : System.Object
+{
+	public int x,y;
 }

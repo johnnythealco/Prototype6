@@ -7,7 +7,7 @@ using Gamelogic;
 public class SectorCell : SpriteCell {
 
 	public bool isAccessible = true;
-	public Unit unit;
+	public UnitController unit;
 	public float Cost = 1;
 	public Contents contents;
 

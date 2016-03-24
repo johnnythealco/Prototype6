@@ -2,13 +2,14 @@
 using System.Collections;
 using System;
 
-public class Unit : MonoBehaviour 
+public class UnitController : MonoBehaviour 
 {
 	public String	displayName;
 	public UnitClass shipClass;
+	public Faction faction;
 	public string Designation; 
 	[SerializeField]
-	public UnitState state; 
+	public Unit unit; 
 
 	#region Base Attributes
 	public int baseActionPoints;
@@ -21,20 +22,12 @@ public class Unit : MonoBehaviour
 	#endregion
 
 
-	void Start()
-	{
-		
-	}
-
 	public void initalize()
 	{
-		state = new UnitState (this);
+		unit = new Unit (this);
 	}
 
-	public void addUnitToRegister()
-	{
-//		Game.UnitRegister.Add (this.Designation, this);
-	}
+
 
 }
 

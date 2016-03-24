@@ -2,23 +2,20 @@
 using System.Collections;
 using UnityEditor;
 
-[CustomEditor (typeof(Unit))]
+[CustomEditor (typeof(UnitController))]
 public class UnitControllerEditor : Editor
 {
 	
-	Unit _unit;
-
-	
-	
+	UnitController unitTemplate;	
 	
 	private void OnEnable ()
 	{
-		_unit = (Unit)target;
+		unitTemplate = (UnitController)target;
 	
 	
-		if (_unit.state != null && !EditorApplication.isPlaying)
+		if (unitTemplate.unit != null && !EditorApplication.isPlaying)
 		{
-			_unit.initalize ();
+			unitTemplate.initalize ();
 		}
 	
 	
@@ -29,39 +26,37 @@ public class UnitControllerEditor : Editor
 	
 		DrawDefaultInspector ();
 	
-		if (_unit.state != null)
+		if (unitTemplate.unit != null)
 		{
 			EditorGUILayout.LabelField ("");
 			EditorGUILayout.LabelField ("-- Unit State Values --");
 			EditorGUILayout.LabelField ("");
 				
-			EditorGUILayout.LabelField ("Display Name:", _unit.state.DisplayName);
-			EditorGUILayout.LabelField ("Designation:", _unit.state.Designation);
-			EditorGUILayout.LabelField ("Action Points:", _unit.state.ActionPoints.ToString ());
+			EditorGUILayout.LabelField ("Display Name:", unitTemplate.unit.DisplayName);
+			EditorGUILayout.LabelField ("Designation:", unitTemplate.unit.Designation);
+			EditorGUILayout.LabelField ("Faction:", unitTemplate.unit.Faction.FactionName);
+			EditorGUILayout.LabelField ("Action Points:", unitTemplate.unit.ActionPoints.ToString ());
 			EditorGUILayout.LabelField ("");
-			EditorGUILayout.LabelField ("Health:", _unit.state.Health.ToString ());
-			EditorGUILayout.LabelField ("Movement:", _unit.state.MovementRange.ToString ());
+			EditorGUILayout.LabelField ("Health:", unitTemplate.unit.Health.ToString ());
+			EditorGUILayout.LabelField ("Movement:", unitTemplate.unit.MovementRange.ToString ());
 			EditorGUILayout.LabelField ("");
-			EditorGUILayout.LabelField ("Initiative:", _unit.state.Initiative.ToString ());
+			EditorGUILayout.LabelField ("Initiative:", unitTemplate.unit.Initiative.ToString ());
 			EditorGUILayout.LabelField ("");
-			EditorGUILayout.LabelField ("Evasion:", _unit.state.Evasion.ToString ());
-			if (_unit.baseEnginesHealth > 0) 
-				EditorGUILayout.LabelField ("Engines Health: ", _unit.state.EnginesHealth.ToString ());
+			EditorGUILayout.LabelField ("Evasion:", unitTemplate.unit.Evasion.ToString ());
+			if (unitTemplate.baseEnginesHealth > 0) 
+				EditorGUILayout.LabelField ("Engines Health: ", unitTemplate.unit.EnginesHealth.ToString ());
 			EditorGUILayout.LabelField ("");
-			if (_unit.baseWeaponsHealth > 0)
-				EditorGUILayout.LabelField ("Weapons Health:", _unit.state.WeaponsHealth.ToString ());
+			if (unitTemplate.baseWeaponsHealth > 0)
+				EditorGUILayout.LabelField ("Weapons Health:", unitTemplate.unit.WeaponsHealth.ToString ());
 	
 		}
 
 		if(GUILayout.Button("Initalize Ship Class"))
 		{
-			_unit.initalize ();
+			unitTemplate.initalize ();
 		}
 
-		if(GUILayout.Button("Add Unit to Register"))
-		{
-			_unit.addUnitToRegister (); 
-		}
+
 
 
 //
